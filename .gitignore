@@ -4,6 +4,7 @@ downloads
 .vs
 
 software/*.exe
+software/*.msi
 scripts/qt_log.txt
 
 CMakeCache.txt

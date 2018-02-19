@@ -26,13 +26,11 @@ echo Installing 7zip...
 
 if not exist "%cmake%" call :download "https://cmake.org/files/v3.10/%cmake%" %cmake%
 echo Installing CMake...
-%cmake% /passive
+%cmake% /passive ADD_CMAKE_TO_PATH=System ALLUSERS=1
 
 if not exist "%python%" call :download "https://www.python.org/ftp/python/2.7.14/%python%" %python%
 echo Installing Python...
-%python% /passive
-:: add Python to PATH because the installer is buged
-setx /M PATH "%PATH%;C:\Python27;C:\Python27\Scripts"
+%python% /passive INSTALLLEVEL=1 ADDLOCAL=DefaultFeature,SharedCRT,Extensions,TclTk,Documentation,Tools,pip_feature,Testsuite,PrependPath
 
 if not exist "C:\Qt" (
 	if not exist "%qt%" call :download "https://download.qt.io/official_releases/online_installers/%qt%" %qt%
