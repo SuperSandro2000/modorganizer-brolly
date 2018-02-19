@@ -21,7 +21,7 @@ welcomepageFinished = function() {
 PerformInstallationFinished = function() {
     if(gui.currentPageWidget().objectName == "PerformInstallationPage") {
 		gui.clickButton(buttons.NextButton);   
-		gui.clickButton(buttons.CommitButton);   
+		//gui.clickButton(buttons.CommitButton);   
     }
 }
 
