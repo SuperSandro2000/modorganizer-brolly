@@ -1,5 +1,6 @@
 @echo off
-
+:: Batch does not handle cross Drive operation very well
+if not %cd:~0,1%==C echo Please put the script onto Drive C: && pause && exit
 :: Working directory. Do not change or stuff will probably break
 set wdir=C:\modorganizer-brolly
 
@@ -30,21 +31,31 @@ del "%temp%\getadmin.vbs"
 exit /B
 
 :gotAdmin
-if not exist %wdir% && mkdir %wdir%
+if not exist %wdir% mkdir %wdir%
 cd %wdir%
-if not exist "C:\Program Files\Git\bin\git.exe" goto install_git
+if not exist "C:\Program Files\Git\bin\git.exe" call :install_git
 if not %cd%==%wdir% cd %wdir%
-git clone -f https://github.com/SuperSandro2000/modorganizer-brolly.git C:\modorganizer-brolly
-git submodule init
-git submodule update
+:: git command won't work until a cmd restart. workaround for that
+set gitdir="C:\Program Files\Git\bin\git.exe"
+echo %gitdir%
+%gitdir% init C:\modorganizer-brolly
+%gitdir% remote add origin https://github.com/SuperSandro2000/modorganizer-brolly.git
+%gitdir% pull origin master
+%gitdir% submodule init
+%gitdir% submodule update
 echo Now all other software will be installed
 ping 127.0.0.1 -n 6 > nul
-call scripts\install_software.bat
+call %wdir%\scripts\install_software.bat
+echo Repo and Software is done setting up.
+echo It can be build by run build_MO2.bat
+pause && exit /b
 
 :install_git
-if not exist %wdir%\software && mkdir %wdir%\software
+if not exist %wdir%\software mkdir %wdir%\software
 cd %wdir%\software
-if not "%git%" powershell -Command "(New-Object System.Net.WebClient).DownloadFile('https://github.com/git-for-windows/git/releases/download/v2.16.1.windows.4/%git%', '%git%')"
+echo Downloading Git...
+if not exist "%git%" powershell -Command "(New-Object System.Net.WebClient).DownloadFile('https://github.com/git-for-windows/git/releases/download/v2.16.1.windows.4/%git%', '%git%')"
+if not exist "%wdir%/scripts" mkdir "%wdir%/scripts"
 (
 	echo [Setup]
 	echo Lang=default
@@ -64,5 +75,8 @@ if not "%git%" powershell -Command "(New-Object System.Net.WebClient).DownloadFi
 	echo UseCredentialManager=Enabled
 	echo EnableSymlinks=Disabled
 ) >> %wdir%/scripts/git.inf
+echo Installing Git...
 %git% /LOADINF=%wdir%/scripts/git.inf /SILENT
-exit /b
+::restart script to update PATH to contain Git
+start %~f0
+exit 
