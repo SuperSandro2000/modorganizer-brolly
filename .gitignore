@@ -1,0 +1,14 @@
+CMakeFiles
+build
+downloads
+.vs
+
+software/*.exe
+scripts/qt_log.txt
+
+CMakeCache.txt
+cmake_install.cmake
+
+*.vcxproj
+*.filters
+*.sln
