@@ -9,19 +9,14 @@ set git=git-2.16.1.4-64-bit.exe
 
 :: UAC Prompt script Source: https://stackoverflow.com/questions/1894967/how-to-request-administrator-access-inside-a-batch-file
 if /I %processor_architecture%==amd64 (
-	>nul 2>&1 "%systemroot%\SysWOW64\cacls.exe" "%systemroot%\SysWOW64\config\system"
+	>nul 2>&1 "%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
 ) else (
-	::>nul 2>&1 "%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
 	echo ModOrganizer2 can only be build on 64-bit machines!
 	pause && exit
 )
 
-if %errorlevel%==5 goto UACPrompt
-if %errorlevel%==2 goto gotAdmin
-echo unspecific error
-echo errorlevel %errorlevel% 
-echo pls ask in the modorganizer discord for help.
-pause && exit
+if not %errorlevel%==0 goto UACPrompt
+if %errorlevel%==0 goto gotAdmin
 
 :UACPrompt
 echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"

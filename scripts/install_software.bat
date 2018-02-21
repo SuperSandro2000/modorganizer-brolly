@@ -1,17 +1,37 @@
 @echo off
+:: wmic path win32_process Where "CommandLine Like '%%/c ""C:\\Program Files\\LLVM/tools/msbuild/install.bat%%'" Call Terminate
+:: Working directory. Do not change or stuff will probably break
+set wdir=C:\modorganizer-brolly
 
-::abort if C:\Qt folder exists
+:: get Admin rights
+:: UAC Prompt script Source: https://stackoverflow.com/questions/1894967/how-to-request-administrator-access-inside-a-batch-file
+if /I %processor_architecture%==amd64 (
+	>nul 2>&1 "%systemroot%\system32\cacls.exe" "%systemroot%\system32\config\system"
+) else (
+	echo ModOrganizer2 can only be build on 64-bit machines!
+	pause && exit
+)
+if not %errorlevel%==0 goto UACPrompt
+if %errorlevel%==0 goto gotAdmin
+
+:UACPrompt
+echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+echo UAC.ShellExecute "cmd.exe", "/c cd %cd% && install_software.bat", "", "runas", 1 >> "%temp%\getadmin.vbs"
+"%temp%\getadmin.vbs"
+del "%temp%\getadmin.vbs"
+exit /B
+
+:gotAdmin
+:: inform user about C:\Qt folder exists and what to do
 if exist "C:\Qt" (
 	echo C:\Qt folder found. Please uninstall it
 	echo or manually install the required packages
 )
 
-:: Working directory. Do not change or stuff will probably break
-set wdir=C:\modorganizer-brolly
-
 :: set executable file names. URLs can change with every release and are simply changed in call: download
 set sevenzip=7z1801-x64.msi
 set cmake=cmake-3.10.2-win64-x64.msi
+set llvm=LLVM-5.0.1-win64.exe
 set python=python-2.7.14.amd64.msi
 set qt=qt-unified-windows-x86-online.exe
 set vs=vs_Community.exe
@@ -27,6 +47,16 @@ echo Installing 7zip...
 if not exist "%cmake%" call :download "https://cmake.org/files/v3.10/%cmake%" %cmake%
 echo Installing CMake...
 %cmake% /passive ADD_CMAKE_TO_PATH=System ALLUSERS=1
+
+if not exist "%llvm%" call :download "http://releases.llvm.org/5.0.1/%llvm%" %llvm%
+echo Installing LLVM...
+:: kill the CMD Windows about MSVC integration
+start ..\scripts\LLVM_kill.bat
+%llvm% /S
+echo Adding LLVM to PATH...
+setx /M PATH "%PATH%;C:\Program Files\LLVM\bin" 
+:: create a empty file to stop the LLVM_kill.bat script
+copy /y nul ..\scripts\LLVM
 
 if not exist "%python%" call :download "https://www.python.org/ftp/python/2.7.14/%python%" %python%
 echo Installing Python...
