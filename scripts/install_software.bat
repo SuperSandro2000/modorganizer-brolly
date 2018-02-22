@@ -32,6 +32,7 @@ if exist "C:\Qt" (
 set sevenzip=7z1801-x64.msi
 set cmake=cmake-3.10.2-win64-x64.msi
 set llvm=LLVM-5.0.1-win64.exe
+set perl=strawberry-perl-5.26.1.1-64bit.msi
 set python=python-2.7.14.amd64.msi
 set qt=qt-unified-windows-x86-online.exe
 set vs=vs_Community.exe
@@ -58,6 +59,10 @@ setx /M PATH "%PATH%;C:\Program Files\LLVM\bin"
 :: create a empty file to stop the LLVM_kill.bat script
 copy /y nul ..\scripts\LLVM
 
+if not exist "%perl%" call :download "http://strawberryperl.com/download/5.26.1.1/%perl%" %perl%
+echo Installing Strawberry Perl...
+%perl% /passive
+
 if not exist "%python%" call :download "https://www.python.org/ftp/python/2.7.14/%python%" %python%
 echo Installing Python...
 %python% /passive INSTALLLEVEL=1 ADDLOCAL=DefaultFeature,SharedCRT,Extensions,TclTk,Documentation,Tools,pip_feature,Testsuite,PrependPath
@@ -67,6 +72,8 @@ if not exist "C:\Qt" (
 	echo Installing Qt...
 	:: | rem is a workaround to wait until Qt is done with installing
 	%qt% --script "%wdir%\scripts\qt.qs"|rem
+	:: rename a fodler that keeps us from compiling
+	ren C:\Qt\5.10.0\msvc2017_64\include\QtNfc QtNfc.disable
 )
 
 if not exist "%vs%" call :download "https://aka.ms/vs/15/release/vs_community.exe" %vs%

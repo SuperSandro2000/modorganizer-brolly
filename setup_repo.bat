@@ -51,7 +51,7 @@ cd %wdir%\software
 echo Downloading Git...
 if not exist "%git%" powershell -Command "(New-Object System.Net.WebClient).DownloadFile('https://github.com/git-for-windows/git/releases/download/v2.16.1.windows.4/%git%', '%git%')"
 if not exist "%wdir%/scripts" mkdir "%wdir%/scripts"
-(
+if not exist %wdir%\scripts/git.inf (
 	echo [Setup]
 	echo Lang=default
 	echo Dir=C:\Program Files\Git
