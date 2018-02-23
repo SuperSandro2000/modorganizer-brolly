@@ -49,15 +49,15 @@ if not exist "%cmake%" call :download "https://cmake.org/files/v3.10/%cmake%" %c
 echo Installing CMake...
 %cmake% /passive ADD_CMAKE_TO_PATH=System ALLUSERS=1
 
-if not exist "%llvm%" call :download "http://releases.llvm.org/5.0.1/%llvm%" %llvm%
-echo Installing LLVM...
-:: kill the CMD Windows about MSVC integration
-start ..\scripts\LLVM_kill.bat
-%llvm% /S
-echo Adding LLVM to PATH...
-setx /M PATH "%PATH%;C:\Program Files\LLVM\bin" 
-:: create a empty file to stop the LLVM_kill.bat script
-copy /y nul ..\scripts\LLVM
+REM if not exist "%llvm%" call :download "http://releases.llvm.org/5.0.1/%llvm%" %llvm%
+REM echo Installing LLVM...
+REM :: kill the CMD Windows about MSVC integration
+REM start ..\scripts\LLVM_kill.bat
+REM %llvm% /S
+REM echo Adding LLVM to PATH...
+REM setx /M PATH "%PATH%;C:\Program Files\LLVM\bin" 
+REM :: create a empty file to stop the LLVM_kill.bat script
+REM copy /y nul ..\scripts\LLVM
 
 if not exist "%perl%" call :download "http://strawberryperl.com/download/5.26.1.1/%perl%" %perl%
 echo Installing Strawberry Perl...
